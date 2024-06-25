@@ -1,0 +1,5 @@
+package router
+
+func RegisterRoads() {
+
+}

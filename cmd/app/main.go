@@ -19,7 +19,10 @@ package main
 import (
 	"fmt"
 	"librestories/repositories"
+	"librestories/router"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -29,11 +32,24 @@ func main() {
 	if err := repositories.InitPublications(); err != nil {
 		fmt.Println(err)
 	}
+	if err := repositories.InitComments(); err != nil {
+		fmt.Println(err)
+	}
 	if err := repositories.InitUsers(); err != nil {
 		fmt.Println(err)
 	}
+	if err := repositories.InitPublicationEmotions(); err != nil {
+		fmt.Println(err)
+	}
+	if err := repositories.InitCommentEmotions(); err != nil {
+		fmt.Println(err)
+	}
+
+	r := mux.NewRouter()
+	router.RegisterRoutes(r)
+
 	fmt.Println("Server is listening")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8080", r); err != nil {
 		fmt.Println(err)
 	}
 }

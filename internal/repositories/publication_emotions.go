@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"librestories/configs"
 	"librestories/models"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type PublicationEmotion models.PublicationEmotion

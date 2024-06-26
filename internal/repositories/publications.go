@@ -38,7 +38,7 @@ func InitPublications() error {
 
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS Publications(
   				Id               INT PRIMARY KEY AUTO_INCREMENT,
-				AuthorId         INT DEFAULT 0,ы
+				AuthorId         INT DEFAULT 0,
 				Name             VARCHAR(100) NOT NULL,
 				Description      VARCHAR(300),
 				CreationDateTime DATETIME,

@@ -14,4 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package app
+package models
+
+type GeneralStatistics struct {
+	UsersCount        int `json:"user_count"`
+	PublicationsCount int `json:"publications_count"`
+	CommentsCount     int `json:"comments_count"`
+}

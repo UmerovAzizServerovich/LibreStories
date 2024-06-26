@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"librestories/configs"
 	"librestories/models"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type CommentEmotion models.CommentEmotion
@@ -38,7 +40,7 @@ func InitCommentEmotions() error {
 				CommentId   INT,
 				UserId      INT,
 				EmotionType TINYINT,
-				Deleted     TINYINY(1) DEFAULT 0
+				Deleted     TINYINT(1) DEFAULT 0
 			);`); err != nil {
 		return err
 	}

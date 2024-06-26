@@ -20,49 +20,57 @@ import (
 	"database/sql"
 	"fmt"
 	"librestories/configs"
+	"librestories/models"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func DisplayUsersCount() (int, error) {
-	db, err := sql.Open("sql", fmt.Sprintf("%s:%s@/%s",
+type GeneralStatistics models.GeneralStatistics
+
+func (stats *GeneralStatistics) DisplayUsersCount() error {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
 		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
-		return -1, err
-	}
-	var count int
-	err = db.QueryRow(`SELECT COUNT(*) FROM USERS WHERE Delted != 1`).Scan(&count)
-	if err != nil {
-		return -1, err
+		return err
 	}
 
-	return count, nil
+	err = db.QueryRow(`SELECT COUNT(*) FROM Users
+		WHERE Deleted != 1`).Scan(&stats.UsersCount)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func DisplayPublicationsCount() (int, error) {
-	db, err := sql.Open("sql", fmt.Sprintf("%s:%s@/%s",
+func (stats *GeneralStatistics) DisplayPublicationsCount() error {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
 		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
-		return -1, err
-	}
-	var count int
-	err = db.QueryRow(`SELECT COUNT(*) FROM Publications WHERE Delted != 1`).Scan(&count)
-	if err != nil {
-		return -1, err
+		return err
 	}
 
-	return count, nil
+	err = db.QueryRow(`SELECT COUNT(*) FROM Publications
+		WHERE Deleted != 1`).Scan(&stats.PublicationsCount)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func DisplayCommentsCount() (int, error) {
-	db, err := sql.Open("sql", fmt.Sprintf("%s:%s@/%s",
+func (stats *GeneralStatistics) DisplayCommentsCount() error {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
 		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
-		return -1, err
-	}
-	var count int
-	err = db.QueryRow(`SELECT COUNT(*) FROM Comments WHERE Delted != 1`).Scan(&count)
-	if err != nil {
-		return -1, err
+		return err
 	}
 
-	return count, nil
+	err = db.QueryRow(`SELECT COUNT(*) FROM Comments
+		WHERE Deleted != 1`).Scan(&stats.CommentsCount)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

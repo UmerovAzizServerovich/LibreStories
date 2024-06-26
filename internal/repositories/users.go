@@ -40,14 +40,14 @@ func InitUsers() error {
   				Id           INT PRIMARY KEY AUTO_INCREMENT,
   				UserName     VARCHAR(30) NOT NULL,
 				Password     VARCHAR(30) NOT NULL,
-				About        VARCHAR(200)
+				About        VARCHAR(200),
   				CreationDate DATE,
 				Role         VARCHAR(30),
 				Avatar       VARCHAR(100),
 				DateOfBirth  DATE,
 				Gender       TINYINT DEFAULT 0,
 		  		AdminLVL     INT NOT NULL DEFAULT 0,
-				Deleted      TINYINT(1)
+				Deleted      TINYINT(1) DEFAULT 0
 			);`); err != nil {
 		return err
 	}

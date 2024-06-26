@@ -1,7 +1,7 @@
-package config
+package configs
 
 const (
 	SqlUser     string = "user"
 	SqlPassword string = "qwerty777"
-	DbName             = "data"
+	DbName      string = "data"
 )

@@ -19,15 +19,15 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
-	"miniforum/config"
-	"miniforum/models"
+	"librestories/configs"
+	"librestories/models"
 )
 
 type CommentEmotion models.CommentEmotion
 
 func InitCommentEmotions() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func InitCommentEmotions() error {
 
 func (com_emotion *CommentEmotion) Add() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (com_emotion *CommentEmotion) Add() error {
 
 func (com_emotion *CommentEmotion) Save() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (com_emotion *CommentEmotion) Save() error {
 
 func (com_emotion *CommentEmotion) Delete() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}

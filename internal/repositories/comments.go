@@ -19,8 +19,8 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
-	"miniforum/config"
-	"miniforum/models"
+	"librestories/configs"
+	"librestories/models"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -30,7 +30,7 @@ type Comment models.Comment
 
 func InitComments() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func InitComments() error {
 
 func (com *Comment) Add() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (com *Comment) Add() error {
 
 func (com *Comment) View() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (com *Comment) View() error {
 
 func (com *Comment) Save() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (com *Comment) Save() error {
 
 func (com *Comment) Delete() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func (com *Comment) Delete() error {
 
 func (com *Comment) Recover() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}

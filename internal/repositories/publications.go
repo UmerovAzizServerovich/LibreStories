@@ -19,8 +19,8 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
-	"miniforum/config"
-	"miniforum/models"
+	"librestories/configs"
+	"librestories/models"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -28,9 +28,35 @@ import (
 
 type Publication models.Publication
 
+func InitPublications() error {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS Publications(
+  				Id               INT PRIMARY KEY AUTO_INCREMENT,
+				AuthorId         INT DEFAULT 0,ы
+				Name             VARCHAR(100) NOT NULL,
+				Description      VARCHAR(300),
+				CreationDateTime DATETIME,
+				Likes            INT DEFAULT 0,
+				Dislikes         INT DEFAULT 0,
+				Category         INT DEFAULT 0,
+				Images           VARCHAR(200),
+				Content          TEXT,
+				Deleted          TINYINT(1)
+			);`); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (pub *Publication) Add() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -47,7 +73,7 @@ func (pub *Publication) Add() error {
 
 func (pub *Publication) View() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -65,7 +91,7 @@ func (pub *Publication) View() error {
 
 func (pub *Publication) Save() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -82,7 +108,7 @@ func (pub *Publication) Save() error {
 
 func (pub *Publication) Delete() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -102,7 +128,7 @@ func (pub *Publication) Delete() error {
 
 func (pub *Publication) Recover() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}

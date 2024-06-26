@@ -19,8 +19,8 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
-	"miniforum/config"
-	"miniforum/models"
+	"librestories/configs"
+	"librestories/models"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -30,7 +30,7 @@ type User models.User
 
 func InitUsers() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func InitUsers() error {
 
 func (user *User) Add() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return (err)
 	}
@@ -72,7 +72,7 @@ func (user *User) Add() error {
 
 func (user *User) CheckPassword() (bool, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return false, err
 	}
@@ -92,7 +92,7 @@ func (user *User) CheckPassword() (bool, error) {
 
 func (user *User) View() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (user *User) View() error {
 
 func (user *User) Save() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (user *User) Save() error {
 
 func (user *User) Delete() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func (user *User) Delete() error {
 
 func (user *User) Recover() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (user *User) Recover() error {
 
 func (user *User) DisplayOwnPublications(start, count int) ([]int, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func (user *User) DisplayOwnPublications(start, count int) ([]int, error) {
 
 func (user *User) DisplayOwnComments(start, count int) ([]int, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func (user *User) DisplayOwnComments(start, count int) ([]int, error) {
 
 func (user *User) DisplayFavoritePublications(start, count int) ([]int, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +224,7 @@ func (user *User) DisplayFavoritePublications(start, count int) ([]int, error) {
 
 func (user *User) DisplayFavoriteComments(start, count int) ([]int, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
-		config.SqlUser, config.SqlPassword, config.DbName))
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
 	if err != nil {
 		return nil, err
 	}

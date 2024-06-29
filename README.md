@@ -8,19 +8,6 @@ This is a simple forum project created as a pet project.
 - Adding and changing user data
 - Publishing, modifying, and pseudo-deleting posts
 - Publishing, modifying, and pseudo-deleting comments
-- Basic moderation tools
-
-## Installation
-
-Instructions for installing and running the project.
-
-## Usage
-
-Instructions for using the project.
-
-## Contributing
-
-Guidelines for contributing to the project.
 
 ## License
 

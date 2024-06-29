@@ -17,14 +17,24 @@
 package models
 
 type Publication struct {
-	Id               int
-	AuthorId         int
-	Name             string
-	Description      string
-	CreationDateTime string
-	Likes            int
-	Dislikes         int
-	Category         string
-	Images           string
-	Content          string
+	Id               int    `json:"id,omitempty"`
+	AuthorId         int    `json:"author_id,omitempty"`
+	AuthorName       string `json:"author_name,omitempty"`
+	AuthorPassword   string `json:"author_password,omitempty"`
+	Name             string `json:"name,omitempty"`
+	Description      string `json:"description,omitempty"`
+	CreationDateTime string `json:"creation_date_time,omitempty"`
+	Likes            int    `json:"likes,omitempty"`
+	Dislikes         int    `json:"dislikes,omitempty"`
+	Category         int    `json:"category,omitempty"`
+	Images           string `json:"images,omitempty"`
+	CommentsIds      []int  `json:"comments_ids,omitempty"`
+	CommentsCount    int    `json:"comments_count,omitempty"`
+	Content          string `json:"content,omitempty"`
+}
+
+type Publications struct {
+	Ids   []int `json:"ids,omitempty"`
+	Start int   `json:"start,omitempty"`
+	Count int   `json:"count,omitempty"`
 }

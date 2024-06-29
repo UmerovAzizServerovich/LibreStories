@@ -21,12 +21,14 @@ import (
 	"librestories/repositories"
 )
 
-func Auth(user repositories.User) (bool, error) {
-	result, err := user.CheckPassword()
-	if err != nil {
-		fmt.Println(err)
-		return false, err
+func DisplayPublicationsIds(start, count int) (repositories.Publications, error) {
+	pubs := repositories.Publications{
+		Start: start,
+		Count: count,
 	}
-	return result, nil
-
+	if err := pubs.View(); err != nil {
+		fmt.Println(err)
+		return pubs, err
+	}
+	return pubs, nil
 }

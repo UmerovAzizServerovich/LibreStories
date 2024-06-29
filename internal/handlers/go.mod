@@ -7,7 +7,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	librestories/configs v0.0.0 // indirect
 	librestories/models v0.0.0 // indirect
-	librestories/repositories v0.0.0 // indirect
+	librestories/repositories v0.0.0
 	librestories/services v0.0.0
 
 )

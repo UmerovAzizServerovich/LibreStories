@@ -25,7 +25,7 @@ import (
 	"time"
 )
 
-func AuthUser(w http.ResponseWriter, r *http.Request) {
+func RegUser(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	if r.Method != http.MethodPost {
 		w.WriteHeader(405)
@@ -35,6 +35,7 @@ func AuthUser(w http.ResponseWriter, r *http.Request) {
 
 	var user repositories.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		fmt.Println(err)
 		w.WriteHeader(400)
 		w.Write([]byte("Invalid Input"))
 		return
@@ -43,17 +44,17 @@ func AuthUser(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Invalid Input"))
 		return
 	}
-	result, err := services.Auth(user)
+	result, err := services.RegUser(user)
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(500)
 		w.Write([]byte("Internal Server Error"))
 		return
-	}
-	if !result {
+	} else if !result {
 		w.WriteHeader(400)
-		w.Write([]byte("Invalid UserName or Password"))
+		w.Write([]byte("This name is occupied"))
 		return
 	}
-	w.Write([]byte("The user is autorized"))
+	w.Write([]byte("The user is registered"))
 	fmt.Printf("%s %s %s\n", r.Method, r.RequestURI, time.Since(start))
 }

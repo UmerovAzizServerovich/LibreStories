@@ -27,6 +27,7 @@ import (
 )
 
 type Publication models.Publication
+type Publications models.Publications
 
 func InitPublications() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
@@ -46,8 +47,9 @@ func InitPublications() error {
 				Dislikes         INT DEFAULT 0,
 				Category         INT DEFAULT 0,
 				Images           VARCHAR(200),
+				CommentsCount	 INT DEFAULT 0,
 				Content          TEXT,
-				Deleted          TINYINT(1)
+				Deleted          TINYINT(1) DEFAULT 0
 			);`); err != nil {
 		return err
 	}
@@ -62,10 +64,15 @@ func (pub *Publication) Add() error {
 	}
 	defer db.Close()
 
-	if _, err := db.Exec(`INSERT INTO Publications(AuthorId, Name, Description,
-		Сategory, CreationDate, Images, Content) VALUES(?, ?, ?, ?, ?, ?);`,
-		(*pub).AuthorId, (*pub).Name, (*pub).Description, (*pub).Category,
-		time.Now(), (*pub).Images, (*pub).Content); err != nil {
+	if err = db.QueryRow(`SELECT Id FROM Users WHERE UserName = ? AND Deleted != 1;`,
+		pub.AuthorName).Scan(&pub.AuthorId); err != nil {
+		return err
+	}
+
+	if _, err := db.Exec(`INSERT INTO Publications(AuthorId, Name, Description, Category,
+		CreationDateTime, Images, Content) VALUES(?, ?, ?, ?, ?, ?, ?);`,
+		pub.AuthorId, pub.Name, pub.Description, pub.Category,
+		time.Now(), pub.Images, pub.Content); err != nil {
 		return err
 	}
 	return nil
@@ -79,13 +86,31 @@ func (pub *Publication) View() error {
 	}
 	defer db.Close()
 
-	if err = db.QueryRow(`SELECT * FROM Publications WHERE Id = ?  AND Deleted != 1;`,
-		(*pub).Id).Scan((*pub).Id, (*pub).AuthorId, (*pub).Name, (*pub).Description,
-		(*pub).CreationDateTime, (*pub).Likes, (*pub).Dislikes, (*pub).Category,
-		(*pub).Content); err != nil {
+	if err = db.QueryRow(`SELECT Id, AuthorId, Name, Description,
+		CreationDateTime, Likes, Dislikes, Category, CommentsCount,
+		Content FROM Publications WHERE Id = ?  AND Deleted != 1;`,
+		pub.Id).Scan(&pub.Id, &pub.AuthorId, &pub.Name, &pub.Description,
+		&pub.CreationDateTime, &pub.Likes, &pub.Dislikes, &pub.Category, &pub.CommentsCount,
+		&pub.Content); err != nil {
 		return err
 	}
 
+	rows, err := db.Query(`SELECT Id FROM Comments WHERE PublicationId = ?
+		AND Deleted != 1 ORDER BY Id DESC;`, pub.Id)
+	if err == sql.ErrNoRows {
+	} else if err != nil {
+		return err
+	}
+	if pub.CommentsCount > 0 {
+		pub.CommentsIds = make([]int, pub.CommentsCount)
+		rows.Next()
+		for i := 0; ; i++ {
+			rows.Scan(&(pub.CommentsIds[i]))
+			if !rows.Next() {
+				break
+			}
+		}
+	}
 	return nil
 }
 
@@ -99,8 +124,8 @@ func (pub *Publication) Save() error {
 
 	if _, err := db.Exec(`UPDATE Publications SET Name = ?, Description = ?,
 		Сategory = ?, Content = ? WHERE Id = ? AND Deleted != 1;`,
-		(*pub).Name, (*pub).Description, (*pub).Category, (*pub).Content,
-		(*pub).Id); err != nil {
+		pub.Name, pub.Description, pub.Category, pub.Content,
+		pub.Id); err != nil {
 		return err
 	}
 	return nil
@@ -143,5 +168,33 @@ func (pub *Publication) Recover() error {
 		pub.Id); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (pubs *Publications) View() error {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	pubs.Ids = make([]int, pubs.Count)
+	rows, err := db.Query(`SELECT Id FROM Publications
+		WHERE Deleted != 1 ORDER BY CreationDateTime DESC LIMIT ? OFFSET ?;`,
+		pubs.Count, pubs.Start)
+	if err == sql.ErrNoRows {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	rows.Next()
+	for i := 0; i < pubs.Count; i++ {
+		rows.Scan(&(pubs.Ids[i]))
+		if !rows.Next() {
+			break
+		}
+	}
+
 	return nil
 }

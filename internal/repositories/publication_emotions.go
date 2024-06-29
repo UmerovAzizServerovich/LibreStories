@@ -39,7 +39,8 @@ func InitPublicationEmotions() error {
   				Id            INT PRIMARY KEY AUTO_INCREMENT,
 				PublicationId INT,
 				UserId        INT DEFAULT 0,
-				EmotionType   TINYINT
+				EmotionType   TINYINT,
+				Deleted       TINYINT(1) DEFAULT 0
 			);`); err != nil {
 		return err
 	}

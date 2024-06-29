@@ -17,8 +17,10 @@
 package models
 
 type CommentEmotion struct {
-	Id          int
-	CommentId   int
-	UserId      int
-	EmotionType int
+	Id           int    `json:"id,omitempty"`
+	CommentId    int    `json:"comment_id,omitempty"`
+	UserId       int    `json:"user_id,omitempty"`
+	UserName     string `json:"user_name,omitempty"`
+	UserPassword string `json:"user_password,omitempty"`
+	EmotionType  int    `json:"emotion_type,omitempty"`
 }

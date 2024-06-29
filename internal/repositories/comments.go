@@ -38,14 +38,13 @@ func InitComments() error {
 
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS Comments(
   				Id            INT PRIMARY KEY AUTO_INCREMENT,
+				PublicationId INT,
   				AuthorId      INT,
 	  			CreationDate  DATETIME,
   				Likes         INT DEFAULT 0,
 				Dislikes      INT DEFAULT 0,
-				MainCommentId INT DEFAULT 0,
-				SubSection    TINYINT DEFAULT 0,
   				Content       TEXT,
-				Deleted       TINYINT(1)
+				Deleted       TINYINT(1) DEFAULT 0
 			);`); err != nil {
 		return err
 	}
@@ -60,10 +59,27 @@ func (com *Comment) Add() error {
 	}
 	defer db.Close()
 
+	if err = db.QueryRow(`SELECT Id FROM Users WHERE UserName = ? AND Deleted != 1;`,
+		com.AuthorName).Scan(&com.AuthorId); err != nil {
+		return err
+	}
+
 	if _, err := db.Exec(`INSERT INTO Comments(AuthorId, CreationDate,
-		MainCommentId, SubSection, Content) VALUES(?, ?, ?, ?, ?);`,
-		(*com).AuthorId, time.Now(), (*com).MainCommentId, (*com).SubSection,
-		(*com).Content); err != nil {
+		PublicationId, Content) VALUES(?, ?, ?, ?);`,
+		com.AuthorId, time.Now(), com.PublicationId, com.Content); err != nil {
+		return err
+	}
+
+	var coms_count int
+	if err = db.QueryRow(`SELECT CommentsCount FROM Publications
+		WHERE Id = ? AND Deleted != 1;`,
+		com.PublicationId).Scan(&coms_count); err != nil {
+		return err
+	}
+
+	coms_count++
+	if _, err := db.Exec(`UPDATE Publications SET CommentsCount = ?
+		WHERE Id = ?;`, coms_count, com.PublicationId); err != nil {
 		return err
 	}
 	return nil
@@ -79,8 +95,8 @@ func (com *Comment) View() error {
 
 	if err = db.QueryRow(`SELECT * FROM Comments
 		WHERE Id = ? AND Deleted != 1;`,
-		com.Id).Scan(com.Id, com.AuthorId, com.CreationDateTime, com.Likes,
-		com.Dislikes, com.Content); err != nil {
+		com.Id).Scan(&com.Id, &com.AuthorId, &com.CreationDateTime, &com.Likes,
+		&com.Dislikes, &com.Content); err != nil {
 		return err
 	}
 
@@ -97,7 +113,7 @@ func (com *Comment) Save() error {
 
 	if _, err := db.Exec(`UPDATE Comments SET Content = '?'
 		WHERE Id = ? AND Deleted != 1;`,
-		(*com).Content, (*com).Id); err != nil {
+		com.Content, com.Id); err != nil {
 		return err
 	}
 	return nil
@@ -112,7 +128,8 @@ func (com *Comment) Delete() error {
 	defer db.Close()
 
 	if _, err := db.Exec(`UPDATE Comments SET Deleted = 1
-		WHERE Id = ?;`, com.Id); err != nil {
+		WHERE Id = ?;`,
+		com.Id); err != nil {
 		return err
 	}
 	if _, err := db.Exec(`UPDATE CommentEmotions SET Deleted = 1
@@ -132,7 +149,8 @@ func (com *Comment) Recover() error {
 	defer db.Close()
 
 	if _, err := db.Exec(`UPDATE Comments SET Deleted = 0
-		WHERE Id = ?;`, com.Id); err != nil {
+		WHERE Id = ?;`,
+		com.Id); err != nil {
 		return err
 	}
 	if _, err := db.Exec(`UPDATE CommentEmotions SET Deleted = 0

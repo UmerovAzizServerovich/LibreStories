@@ -63,11 +63,29 @@ func (user *User) Add() error {
 	defer db.Close()
 
 	if _, err = db.Exec(`INSERT INTO Users(UserName, Password, CreationDate)
-		VALUES(?, ?, ?)`, (*user).UserName, (*user).Password,
+		VALUES(?, ?, ?)`, user.UserName, user.Password,
 		time.Now()); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (user *User) CheckUsernameUniqueness() (bool, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s",
+		configs.SqlUser, configs.SqlPassword, configs.DbName))
+	if err != nil {
+		return false, err
+	}
+	defer db.Close()
+
+	if err := db.QueryRow(`SELECT Id FROM Users
+		WHERE UserName = ?`, user.UserName).Scan(&user.Id); err == sql.ErrNoRows {
+		return true, nil
+	} else if err == nil {
+		return false, nil
+	} else {
+		return false, err
+	}
 }
 
 func (user *User) CheckPassword() (bool, error) {
@@ -80,11 +98,11 @@ func (user *User) CheckPassword() (bool, error) {
 
 	var true_password string
 	if err := db.QueryRow(`SELECT Password FROM Users
-		WHERE Id = ? AND Deleted != 1;`,
-		(*user).Id).Scan(&true_password); err != nil {
+		WHERE UserName = ? AND Deleted != 1;`,
+		user.UserName).Scan(&true_password); err != nil {
 		return false, err
 	}
-	if (*user).Password == true_password {
+	if user.Password == true_password {
 		return true, nil
 	}
 	return false, nil
@@ -98,12 +116,12 @@ func (user *User) View() error {
 	}
 	defer db.Close()
 
-	err = db.QueryRow(`SELECT Id, UserName, About, CreationDate, Role, Avatar,
+	if err = db.QueryRow(`SELECT Id, UserName, About, CreationDate, Role, Avatar,
 		DateOfBirth, Gender, AdminLVL FROM Users WHERE Id = ? AND Deleted != 1;`,
-		(*user).Id).Scan(
-		(*user).Id, (*user).UserName, (*user).About, (*user).CreationDate, (*user).Role,
-		(*user).Avatar, (*user).DateOfBirth, (*user).Gender, (*user).AdminLVL)
-	if err != nil {
+		user.Id).Scan(
+		&user.Id, &user.UserName, &user.About, &user.CreationDate, &user.Role,
+		&user.Avatar, &user.DateOfBirth, &user.Gender, &user.AdminLVL); err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -121,9 +139,9 @@ func (user *User) Save() error {
 	if _, err := db.Exec(`UPDATE Users SET UserName = ?, Password = ?, About = ?,
 		Role, Avatar, DateOfBirth, Gender, AdminLVL
 		WHERE Id = ?;`,
-		(*user).UserName, (*user).Password, (*user).About, (*user).Role,
-		(*user).Avatar, (*user).DateOfBirth, (*user).Gender, (*user).AdminLVL,
-		(*user).Id); err != nil {
+		user.UserName, user.Password, user.About, user.Role,
+		user.Avatar, user.DateOfBirth, user.Gender, user.AdminLVL,
+		user.Id); err != nil {
 		return err
 	}
 	return nil
@@ -168,12 +186,16 @@ func (user *User) DisplayOwnPublications(start, count int) ([]int, error) {
 	defer db.Close()
 
 	own_pub_ids := make([]int, count)
+	rows, err := db.Query(`SELECT Id FROM Publications WHERE AuthorId = ?
+		AND Deleted != 1 ORDER BY Id DESC LIMIT ? OFFSET ?;`,
+		user.Id, count, start)
+	if err != nil {
+		return nil, err
+	}
 	for i := 0; i < count; i++ {
-		err = db.QueryRow(`SELECT Id FROM Publications WHERE AuthorId = ?
-			AND Deleted != 1 ORDER BY Id DESC;`,
-			(*user).Id).Scan(&(own_pub_ids[i]))
-		if err != nil {
-			return nil, err
+		rows.Scan(&(own_pub_ids[i]))
+		if !rows.Next() {
+			break
 		}
 	}
 
@@ -189,12 +211,16 @@ func (user *User) DisplayOwnComments(start, count int) ([]int, error) {
 	defer db.Close()
 
 	own_com_ids := make([]int, count)
+	rows, err := db.Query(`SELECT Id FROM Comments WHERE AuthorId = ?
+		AND Deleted != 1 ORDER BY Id DESC LIMIT ? OFFSET ?;`,
+		user.Id, count, start)
+	if err != nil {
+		return nil, err
+	}
 	for i := 0; i < count; i++ {
-		err = db.QueryRow(`SELECT Id FROM Comments WHERE AuthorId = ?
-			AND Deleted != 1 ORDER BY Id DESC;`,
-			(*user).Id).Scan(&(own_com_ids[i]))
-		if err != nil {
-			return nil, err
+		rows.Scan(&(own_com_ids[i]))
+		if !rows.Next() {
+			break
 		}
 	}
 
@@ -210,12 +236,16 @@ func (user *User) DisplayFavoritePublications(start, count int) ([]int, error) {
 	defer db.Close()
 
 	favorite_pub_ids := make([]int, count)
+	rows, err := db.Query(`SELECT PublicationId FROM PublicationEmotions
+		WHERE UserId = ? AND Deleted != 1 ORDER BY Id DESC LIMIT ? OFFSET ?;`,
+		user.Id, count, start)
+	if err != nil {
+		return nil, err
+	}
 	for i := 0; i < count; i++ {
-		err = db.QueryRow(`SELECT PublicationId FROM PublicationEmotions
-			WHERE UserId = ? AND Deleted != 1 ORDER BY Id DESC;`,
-			(*user).Id).Scan(&(favorite_pub_ids[i]))
-		if err != nil {
-			return nil, err
+		rows.Scan(&(favorite_pub_ids[i]))
+		if !rows.Next() {
+			break
 		}
 	}
 
@@ -231,12 +261,16 @@ func (user *User) DisplayFavoriteComments(start, count int) ([]int, error) {
 	defer db.Close()
 
 	favorite_com_ids := make([]int, count)
+	rows, err := db.Query(`SELECT CommentId FROM CommentEmotions WHERE UserId = ?
+		AND Deleted != 1 ORDER BY Id DESC LIMIT ? OFFSET ?;`,
+		user.Id, count, start)
+	if err != nil {
+		return nil, err
+	}
 	for i := 0; i < count; i++ {
-		err = db.QueryRow(`SELECT CommentId FROM CommentEmotions WHERE UserId = ?
-			AND Deleted != 1 ORDER BY Id DESC;`,
-			(*user).Id).Scan(&(favorite_com_ids[i]))
-		if err != nil {
-			return nil, err
+		rows.Scan(&(favorite_com_ids[i]))
+		if !rows.Next() {
+			break
 		}
 	}
 

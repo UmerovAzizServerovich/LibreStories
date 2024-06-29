@@ -17,12 +17,13 @@
 package models
 
 type Comment struct {
-	Id               int
-	AuthorId         int
-	CreationDateTime string
-	Likes            int
-	Dislikes         int
-	MainCommentId    int
-	SubSection       int
-	Content          string
+	Id               int    `json:"id,omitempty"`
+	PublicationId    int    `json:"publication_id,omitempty"`
+	AuthorId         int    `json:"author_id,omitempty"`
+	AuthorName       string `json:"author_name,omitempty"`
+	AuthorPassword   string `json:"author_password,omitempty"`
+	CreationDateTime string `json:"creation_date_time,omitempty"`
+	Likes            int    `json:"likes,omitempty"`
+	Dislikes         int    `json:"dislikes,omitempty"`
+	Content          string `json:"content,omitempty"`
 }

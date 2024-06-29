@@ -17,14 +17,14 @@
 package models
 
 type User struct {
-	Id           int
-	UserName     string
-	Password     string
-	About        string
-	CreationDate string
-	Role         string
-	Avatar       string
-	DateOfBirth  string
-	Gender       int
-	AdminLVL     int
+	Id           int    `json:"id,omitempty"`
+	UserName     string `json:"user_name,omitempty"`
+	Password     string `json:"password,omitempty"`
+	About        string `json:"about,omitempty"`
+	CreationDate string `json:"creation_date,omitempty"`
+	Role         string `json:"role,omitempty"`
+	Avatar       string `json:"avatar,omitempty"`
+	DateOfBirth  string `json:"date_of_birth,omitempty"`
+	Gender       int    `json:"gender,omitempty"`
+	AdminLVL     int    `json:"admin_lvl,omitempty"`
 }

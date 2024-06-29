@@ -21,12 +21,19 @@ import (
 	"librestories/repositories"
 )
 
-func Auth(user repositories.User) (bool, error) {
-	result, err := user.CheckPassword()
+func RegUser(user repositories.User) (bool, error) {
+	result, err := user.CheckUsernameUniqueness()
 	if err != nil {
 		fmt.Println(err)
 		return false, err
+	} else if !result {
+		return false, nil
+	} else {
+		if err := user.Add(); err != nil {
+			fmt.Println(err)
+			return false, err
+		}
+		return true, nil
 	}
-	return result, nil
 
 }

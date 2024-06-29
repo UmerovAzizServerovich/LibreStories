@@ -14,19 +14,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package services
+package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"librestories/repositories"
+	"net/http"
+	"time"
 )
 
-func Auth(user repositories.User) (bool, error) {
-	result, err := user.CheckPassword()
-	if err != nil {
-		fmt.Println(err)
-		return false, err
+func DisplayPublicationsIds(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	if r.Method != http.MethodGet {
+		w.WriteHeader(405)
+		w.Write([]byte("Invalid method!"))
+		return
 	}
-	return result, nil
+	var pubs_ids repositories.Publications
+	if err := json.NewDecoder(r.Body).Decode(&pubs_ids); err != nil {
+		fmt.Println(err)
+		w.WriteHeader(400)
+		w.Write([]byte("Invalid Input"))
+		return
+	}
+	if err := pubs_ids.View(); err != nil {
+		fmt.Println(err)
+		w.WriteHeader(500)
+		w.Write([]byte("Internal Server Error"))
+		return
+	}
 
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(pubs_ids)
+	fmt.Printf("%s %s %s\n", r.Method, r.RequestURI, time.Since(start))
 }

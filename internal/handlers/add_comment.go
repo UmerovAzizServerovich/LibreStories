@@ -25,7 +25,7 @@ import (
 	"time"
 )
 
-func AuthUser(w http.ResponseWriter, r *http.Request) {
+func AddComment(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	if r.Method != http.MethodPost {
 		w.WriteHeader(405)
@@ -33,18 +33,21 @@ func AuthUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user repositories.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	var com repositories.Comment
+	if err := json.NewDecoder(r.Body).Decode(&com); err != nil {
+		fmt.Println(err)
 		w.WriteHeader(400)
 		w.Write([]byte("Invalid Input"))
 		return
-	} else if user.UserName == "" || user.Password == "" {
+	} else if com.AuthorName == "" || com.AuthorPassword == "" ||
+		com.Content == "" || com.PublicationId <= 0 {
 		w.WriteHeader(400)
 		w.Write([]byte("Invalid Input"))
 		return
 	}
-	result, err := services.Auth(user)
+	result, err := services.AddComment(com)
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(500)
 		w.Write([]byte("Internal Server Error"))
 		return
@@ -54,6 +57,6 @@ func AuthUser(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Invalid UserName or Password"))
 		return
 	}
-	w.Write([]byte("The user is autorized"))
+	w.Write([]byte("The comment is added"))
 	fmt.Printf("%s %s %s\n", r.Method, r.RequestURI, time.Since(start))
 }

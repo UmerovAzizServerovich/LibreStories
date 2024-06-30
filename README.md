@@ -1,6 +1,6 @@
 # My Forum Project
 
-This is a simple forum project created as a pet project.
+This is the backend of a simple forum project created as a pet project.
 
 ## Features
 

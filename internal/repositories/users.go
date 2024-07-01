@@ -40,10 +40,10 @@ func InitUsers() error {
   				Id           INT PRIMARY KEY AUTO_INCREMENT,
   				UserName     VARCHAR(30) NOT NULL,
 				Password     VARCHAR(30) NOT NULL,
-				About        VARCHAR(200),
+				About        VARCHAR(200) NOT NULL DEFAULT "I'm human",
   				CreationDate DATE,
-				Role         VARCHAR(30),
-				Avatar       VARCHAR(100),
+				Role         VARCHAR(30) NOT NULL DEFAULT "User",
+				Avatar       VARCHAR(100) NOT NULL DEFAULT "media/imgs/default.jpg",
 				DateOfBirth  DATE,
 				Gender       TINYINT DEFAULT 0,
 		  		AdminLVL     INT NOT NULL DEFAULT 0,
@@ -102,10 +102,14 @@ func (user *User) CheckPassword() (bool, error) {
 		user.UserName).Scan(&true_password); err != nil {
 		return false, err
 	}
-	if user.Password == true_password {
-		return true, nil
+	if user.Password != true_password {
+		return false, nil
 	}
-	return false, nil
+	if err = db.QueryRow(`SELECT Id FROM Users WHERE UserName = ? AND Deleted != 1;`,
+		user.Id).Scan(&user.Id); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (user *User) View() error {
@@ -121,7 +125,6 @@ func (user *User) View() error {
 		user.Id).Scan(
 		&user.Id, &user.UserName, &user.About, &user.CreationDate, &user.Role,
 		&user.Avatar, &user.DateOfBirth, &user.Gender, &user.AdminLVL); err != nil {
-		fmt.Println(err)
 		return err
 	}
 

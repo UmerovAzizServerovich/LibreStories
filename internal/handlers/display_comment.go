@@ -17,46 +17,41 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
-	"librestories/models"
+	"librestories/repositories"
 	"librestories/services"
 	"net/http"
 	"time"
 )
 
-func AddComment(w http.ResponseWriter, r *http.Request) {
+func DisplayComment(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodGet {
 		w.WriteHeader(405)
 		w.Write([]byte("Invalid method!"))
 		return
 	}
-
-	var com_req models.CommentRequest
-	if err := json.NewDecoder(r.Body).Decode(&com_req); err != nil {
+	var com repositories.Comment
+	if err := json.NewDecoder(r.Body).Decode(&com); err != nil {
 		fmt.Println(err)
 		w.WriteHeader(400)
 		w.Write([]byte("Invalid Input"))
 		return
-	} else if com_req.User.UserName == "" || com_req.User.Password == "" ||
-		com_req.Comment.Content == "" || com_req.Comment.PublicationId <= 0 {
-		w.WriteHeader(400)
-		w.Write([]byte("Invalid Input"))
-		return
 	}
-	result, err := services.AddComment(com_req)
-	if err != nil {
+	com, err := services.DisplayComment(com)
+	if err == sql.ErrNoRows {
+		w.Write([]byte("Nothing was found"))
+		return
+	} else if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(500)
 		w.Write([]byte("Internal Server Error"))
 		return
 	}
-	if !result {
-		w.WriteHeader(400)
-		w.Write([]byte("Invalid UserName or Password"))
-		return
-	}
-	w.Write([]byte("The comment is added"))
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(com)
 	fmt.Printf("%s %s %s\n", r.Method, r.RequestURI, time.Since(start))
 }

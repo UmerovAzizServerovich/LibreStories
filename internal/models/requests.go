@@ -16,12 +16,27 @@
 
 package models
 
-type Comment struct {
-	Id               int    `json:"id,omitempty"`
-	PublicationId    int    `json:"publication_id,omitempty"`
-	AuthorId         int    `json:"author_id,omitempty"`
-	CreationDateTime string `json:"creation_date_time,omitempty"`
-	Likes            int    `json:"likes,omitempty"`
-	Dislikes         int    `json:"dislikes,omitempty"`
-	Content          string `json:"content,omitempty"`
+type UserRequest struct {
+	UserName string `json:"user_name,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+type PublicationRequest struct {
+	Publication Publication `json:"publication,omitempty"`
+	User        UserRequest `json:"user,omitempty"`
+}
+
+type CommentRequest struct {
+	Comment Comment     `json:"comment,omitempty"`
+	User    UserRequest `json:"user,omitempty"`
+}
+
+type PublicationEmotionRequest struct {
+	PublicationEmotion PublicationEmotion `json:"publication_emotion,omitempty"`
+	User               UserRequest        `json:"user,omitempty"`
+}
+
+type CommentEmotionRequest struct {
+	CommentEmotion CommentEmotion `json:"comment_emotion,omitempty"`
+	User           UserRequest    `json:"user,omitempty"`
 }

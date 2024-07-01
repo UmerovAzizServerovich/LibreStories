@@ -30,4 +30,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/add_com", handlers.AddComment)
 	r.HandleFunc("/display_pub", handlers.DisplayPublication)
 	r.HandleFunc("/display_pubs", handlers.DisplayPublicationsIds)
+	r.HandleFunc("/display_com", handlers.DisplayComment)
+	r.HandleFunc("/delete_pub", handlers.DeletePublication)
+
 }

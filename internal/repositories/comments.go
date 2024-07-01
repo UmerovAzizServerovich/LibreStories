@@ -37,14 +37,14 @@ func InitComments() error {
 	defer db.Close()
 
 	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS Comments(
-  				Id            INT PRIMARY KEY AUTO_INCREMENT,
-				PublicationId INT,
-  				AuthorId      INT,
-	  			CreationDate  DATETIME,
-  				Likes         INT DEFAULT 0,
-				Dislikes      INT DEFAULT 0,
-  				Content       TEXT,
-				Deleted       TINYINT(1) DEFAULT 0
+  				Id                INT PRIMARY KEY AUTO_INCREMENT,
+				PublicationId     INT,
+  				AuthorId          INT,
+	  			CreationDateTime  DATETIME,
+  				Likes             INT DEFAULT 0,
+				Dislikes          INT DEFAULT 0,
+  				Content           TEXT,
+				Deleted           TINYINT(1) DEFAULT 0
 			);`); err != nil {
 		return err
 	}
@@ -59,12 +59,7 @@ func (com *Comment) Add() error {
 	}
 	defer db.Close()
 
-	if err = db.QueryRow(`SELECT Id FROM Users WHERE UserName = ? AND Deleted != 1;`,
-		com.AuthorName).Scan(&com.AuthorId); err != nil {
-		return err
-	}
-
-	if _, err := db.Exec(`INSERT INTO Comments(AuthorId, CreationDate,
+	if _, err := db.Exec(`INSERT INTO Comments(AuthorId, CreationDateTime,
 		PublicationId, Content) VALUES(?, ?, ?, ?);`,
 		com.AuthorId, time.Now(), com.PublicationId, com.Content); err != nil {
 		return err
@@ -93,7 +88,8 @@ func (com *Comment) View() error {
 	}
 	defer db.Close()
 
-	if err = db.QueryRow(`SELECT * FROM Comments
+	if err = db.QueryRow(`SELECT Id, AuthorId, CreationDateTime,
+		Likes, Dislikes, Content FROM Comments
 		WHERE Id = ? AND Deleted != 1;`,
 		com.Id).Scan(&com.Id, &com.AuthorId, &com.CreationDateTime, &com.Likes,
 		&com.Dislikes, &com.Content); err != nil {

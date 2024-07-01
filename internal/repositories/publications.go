@@ -64,11 +64,6 @@ func (pub *Publication) Add() error {
 	}
 	defer db.Close()
 
-	if err = db.QueryRow(`SELECT Id FROM Users WHERE UserName = ? AND Deleted != 1;`,
-		pub.AuthorName).Scan(&pub.AuthorId); err != nil {
-		return err
-	}
-
 	if _, err := db.Exec(`INSERT INTO Publications(AuthorId, Name, Description, Category,
 		CreationDateTime, Images, Content) VALUES(?, ?, ?, ?, ?, ?, ?);`,
 		pub.AuthorId, pub.Name, pub.Description, pub.Category,
@@ -143,10 +138,12 @@ func (pub *Publication) Delete() error {
 		WHERE Id = ?;`, pub.Id); err != nil {
 		return err
 	}
-	if _, err := db.Exec(`UPDATE PublicationEmotions SET Deleted = 1
-		WHERE CommentId = ?;`,
-		pub.Id); err != nil {
-		return err
+	if pub.CommentsCount > 0 {
+		if _, err := db.Exec(`UPDATE PublicationEmotions SET Deleted = 1
+			WHERE CommentId = ?;`,
+			pub.Id); err != nil {
+			return err
+		}
 	}
 	return nil
 }

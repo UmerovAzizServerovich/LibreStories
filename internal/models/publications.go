@@ -19,8 +19,6 @@ package models
 type Publication struct {
 	Id               int    `json:"id,omitempty"`
 	AuthorId         int    `json:"author_id,omitempty"`
-	AuthorName       string `json:"author_name,omitempty"`
-	AuthorPassword   string `json:"author_password,omitempty"`
 	Name             string `json:"name,omitempty"`
 	Description      string `json:"description,omitempty"`
 	CreationDateTime string `json:"creation_date_time,omitempty"`

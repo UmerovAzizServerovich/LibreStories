@@ -18,13 +18,14 @@ package services
 
 import (
 	"fmt"
+	"librestories/models"
 	"librestories/repositories"
 )
 
-func AddComment(com repositories.Comment) (bool, error) {
+func AddComment(com_req models.CommentRequest) (bool, error) {
 	user := repositories.User{
-		UserName: com.AuthorName,
-		Password: com.AuthorPassword,
+		UserName: com_req.User.UserName,
+		Password: com_req.User.Password,
 	}
 	result, err := user.CheckPassword()
 	if !result {
@@ -32,6 +33,12 @@ func AddComment(com repositories.Comment) (bool, error) {
 	} else if err != nil {
 		fmt.Println(err)
 		return false, err
+	}
+
+	com := repositories.Comment{
+		AuthorId:      user.Id,
+		PublicationId: com_req.Comment.PublicationId,
+		Content:       com_req.Comment.Content,
 	}
 	if err := com.Add(); err != nil {
 		fmt.Println(err)

@@ -14,14 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package models
+package services
 
-type Comment struct {
-	Id               int    `json:"id,omitempty"`
-	PublicationId    int    `json:"publication_id,omitempty"`
-	AuthorId         int    `json:"author_id,omitempty"`
-	CreationDateTime string `json:"creation_date_time,omitempty"`
-	Likes            int    `json:"likes,omitempty"`
-	Dislikes         int    `json:"dislikes,omitempty"`
-	Content          string `json:"content,omitempty"`
+import (
+	"fmt"
+	"librestories/repositories"
+)
+
+func DisplayComment(com repositories.Comment) (repositories.Comment, error) {
+	err := com.View()
+	if err != nil {
+		fmt.Println(err)
+		return repositories.Comment{}, err
+	}
+	return com, nil
 }

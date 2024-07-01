@@ -14,14 +14,40 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package models
+package services
 
-type Comment struct {
-	Id               int    `json:"id,omitempty"`
-	PublicationId    int    `json:"publication_id,omitempty"`
-	AuthorId         int    `json:"author_id,omitempty"`
-	CreationDateTime string `json:"creation_date_time,omitempty"`
-	Likes            int    `json:"likes,omitempty"`
-	Dislikes         int    `json:"dislikes,omitempty"`
-	Content          string `json:"content,omitempty"`
+import (
+	"fmt"
+	"librestories/repositories"
+)
+
+func DeletePublication(pub repositories.Publication) (bool, error) {
+	user := repositories.User{
+		Id:       pub.AuthorId,
+		UserName: pub.AuthorName,
+		Password: pub.AuthorPassword,
+	}
+	result, err := user.CheckPassword()
+	if !result {
+		return false, nil
+	} else if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	if err = user.View(); err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	if err := pub.View(); err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	if pub.AuthorId == user.Id || user.AdminLVL >= 2 {
+		if err := pub.Delete(); err != nil {
+			fmt.Println(err)
+			return false, err
+		}
+		return true, nil
+	}
+	return false, nil
 }
